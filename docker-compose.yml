@@ -1,5 +1,5 @@
 version: '3.8'
-sevices:
+services:
   minio:
     image: quay.io/minio/minio
     container_name: minio
@@ -14,7 +14,7 @@ sevices:
       - ./minio-data:/data
 
   postgres:
-    images: postgres:15
+    image: postgres:15
     container_name: postgres
     environment:
       POSTGRES_USER: admin
