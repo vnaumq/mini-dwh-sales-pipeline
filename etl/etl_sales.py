@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+
 load_dotenv()
 
 # CONFIG
@@ -31,15 +32,21 @@ def upload_if_not_exists(local_file_path, bucket_name, s3_file_name):
         aws_secret_access_key=MINIO_SECRET_KEY
     )
 
-    # Проверка: есть ли объект в MinIO
+    # 1️⃣ Проверяем, существует ли bucket
+    try:
+        s3.head_bucket(Bucket=bucket_name)
+    except:
+        # если нет — создаём
+        s3.create_bucket(Bucket=bucket_name)
+        print(f"🪣 Bucket '{bucket_name}' создан.")
+
+    # 2️⃣ Проверяем, есть ли объект
     try:
         s3.head_object(Bucket=bucket_name, Key=s3_file_name)
         print(f"✅ Файл '{s3_file_name}' уже в MinIO, пропускаем загрузку.")
-    except s3.exceptions.ClientError:
-        # Если нет — загружаем
+    except:
+        # если нет — загружаем
         if Path(local_file_path).exists():
-            s3.create_bucket(Bucket=bucket_name)
-            print(f"🪣 Bucket '{bucket_name}' создан.")
             s3.upload_file(local_file_path, bucket_name, s3_file_name)
             print(f"🚀 Файл '{s3_file_name}' загружен в MinIO.")
         else:
@@ -79,17 +86,6 @@ if __name__ == "__main__":
         # Путь к локальному CSV
     LOCAL_FILE = "./sales_data_sample.csv"
     # Debug environment variables
-    print("MINIO_ENDPOINT:", MINIO_ENDPOINT)
-    print("MINIO_ACCESS_KEY:", MINIO_ACCESS_KEY)
-    print("MINIO_SECRET_KEY:", MINIO_SECRET_KEY)
-    print("BUCKET_NAME:", BUCKET_NAME)
-    print("FILE_NAME:", FILE_NAME)
-    print("PG_USER:", PG_USER)
-    print("PG_PASSWORD:", PG_PASSWORD)
-    print("PG_HOST:", PG_HOST)
-    print("PG_PORT:", PG_PORT)
-    print("PG_DB:", PG_DB)
-    print("TABLE_NAME:", TABLE_NAME)
     # Загружаем в MinIO, если ещё нет
     upload_if_not_exists(LOCAL_FILE, BUCKET_NAME, FILE_NAME)
 

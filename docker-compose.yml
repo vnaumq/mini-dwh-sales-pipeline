@@ -35,8 +35,8 @@ services:
 
   etl:
     build:
-      context: .  # корневая директория
-      dockerfile: etl/Dockerfile
+      context: ./etl
+      dockerfile: Dockerfile
     container_name: dwh_etl
     env_file:
       - .env
@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     # volumes:
     #   - .etl:/app
-    command: uv run python etl_sales.py
+    # command: uv run python etl_sales.py
 
 volumes:
   pg-data:

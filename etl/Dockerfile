@@ -4,10 +4,13 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 
-COPY etl/pyproject.toml .
-COPY etl/etl_sales.py .
-COPY sales_data_sample.csv .
+COPY pyproject.toml .
+
 RUN uv pip install --system .
+
+COPY etl_sales.py .
+
+COPY sales_data_sample.csv .
 
 COPY . .
 
