@@ -6,9 +6,14 @@ services:
       - "9000:9000"
       - "9090:9090"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     command: server /data --console-address ":9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
     volumes:
       - minio-data:/data
   postgres:
@@ -16,17 +21,33 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: ${PG_USER}
-      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     ports:
       - "5433:5432"
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U $${PG_USER} -d $${PG_DB}']
+      test: ['CMD-SHELL', 'pg_isready -U ${PG_USER} -d ${PG_DB}']
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
       - pg-data:/var/lib/postgresql/data
+
+  etl:
+    build:
+      context: .  # корневая директория
+      dockerfile: etl/Dockerfile
+    container_name: dwh_etl
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    # volumes:
+    #   - .etl:/app
+    command: uv run python etl_sales.py
 
 volumes:
   pg-data:
