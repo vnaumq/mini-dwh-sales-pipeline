@@ -1,9 +1,7 @@
 FROM apache/airflow:2.8.4-python3.11
 
-RUN pip install --no-cache-dir uv
-
-# WORKDIR /app
-
-COPY pyproject.toml .
-
-RUN uv pip install --system .
+WORKDIR /opt/airflow
+RUN pip install --no-cache-dir --upgrade pip
+COPY requirements.txt .
+COPY dags/ ./dags/
+RUN pip install --no-cache-dir -r requirements.txt
