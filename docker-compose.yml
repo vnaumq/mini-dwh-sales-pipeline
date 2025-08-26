@@ -1,3 +1,24 @@
+
+x-airflow-common: &airflow-common
+  image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
+  build:
+    context: .
+    dockerfile: Dockerfile
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PG_USER:-airflow}:${PG_PASSWORD:-airflow}@postgres/${PG_DB:-airflow}
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 10
+  volumes:
+    - ./dags:/opt/airflow/dags:ro
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins:ro
+  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+  depends_on:
+    postgres:
+      condition: service_healthy
 services:
   minio:
     image: quay.io/minio/minio
@@ -16,6 +37,7 @@ services:
       retries: 3
     volumes:
       - minio-data:/data
+
   postgres:
     image: postgres:15
     container_name: postgres
@@ -24,7 +46,7 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     ports:
-      - "5433:5432"
+      - "5432:5432"
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${PG_USER} -d ${PG_DB}']
       interval: 10s
@@ -33,22 +55,55 @@ services:
     volumes:
       - pg-data:/var/lib/postgresql/data
 
-  etl:
-    build:
-      context: ./etl
-      dockerfile: Dockerfile
-    container_name: dwh_etl
-    env_file:
-      - .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-    # volumes:
-    #   - .etl:/app
-    # command: uv run python etl_sales.py
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow_webserver
+    command: webserver
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: on-failure
+    networks:
+      - airflow-network
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: on-failure
+    networks:
+      - airflow-network
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      airflow db init &&
+      airflow users create \
+        --username ${_AIRFLOW_WWW_USER_USERNAME:-admin} \
+        --password ${_AIRFLOW_WWW_USER_PASSWORD:-admin123} \
+        --firstname Admin \
+        --lastname Admin \
+        --role Admin \
+        --email admin@example.com
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_UPGRADE: true
+    networks:
+      - airflow-network
 
 volumes:
   pg-data:
+    name: pg-data
   minio-data:
+    name: minio-data
+
+networks:
+  airflow-network:
+    name: airflow-network
+    driver: bridge
