@@ -1,4 +1,3 @@
-
 x-airflow-common: &airflow-common
   image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
   build:
@@ -6,11 +5,16 @@ x-airflow-common: &airflow-common
     dockerfile: Dockerfile
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PG_USER}:${PG_PASSWORD}@postgres/${PG_DB}
-    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DB}
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 10
+    _AIRFLOW_DB_UPGRADE: 'true'
+    _AIRFLOW_WWW_USER_CREATE: 'true'
+    _AIRFLOW_WWW_USER_USERNAME: ${AIRFLOW_ADMIN_USER}
+    _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+    _AIRFLOW_WWW_USER_EMAIL: 'admin@example.com'
   volumes:
     - ./dags:/opt/airflow/dags:ro
     - ./logs:/opt/airflow/logs
@@ -21,6 +25,11 @@ x-airflow-common: &airflow-common
       condition: service_healthy
     minio:
       condition: service_healthy
+  env_file:
+    - .env
+  networks:
+    - airflow-network
+
 services:
   minio:
     image: quay.io/minio/minio
@@ -39,6 +48,8 @@ services:
       retries: 3
     volumes:
       - minio-data:/data
+    networks:
+      - airflow-network
 
   postgres:
     image: postgres:15
@@ -50,70 +61,56 @@ services:
     ports:
       - "5433:5432"
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${PG_USER} -d ${PG_DB}']
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
       - pg-data:/var/lib/postgresql/data
+    networks:
+      - airflow-network
 
   airflow-webserver:
     <<: *airflow-common
-    env_file:
-      - .env
     container_name: airflow_webserver
     command: webserver
     ports:
-      - 8080:8080
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 10s
       timeout: 10s
       retries: 5
-    restart: on-failure
-    networks:
-      - airflow-network
+    restart: always
 
   airflow-scheduler:
     <<: *airflow-common
-    env_file:
-      - .env
-    container_name: airflow-scheduler
+    container_name: airflow_scheduler
     command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 10s
+      test: ["CMD-SHELL", "airflow jobs check --job-type SchedulerJob --local"]
+      interval: 30s
       timeout: 10s
       retries: 5
-    restart: on-failure
-    networks:
-      - airflow-network
+    restart: always
 
   airflow-init:
     <<: *airflow-common
-    env_file:
-      - .env
-    container_name: airflow-init
-    entrypoint: ["/bin/bash", "-c"]
+    container_name: airflow_init
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     command: >
-      airflow db init &&
-      airflow users create \
-        --username ${_AIRFLOW_WWW_USER_USERNAME:-admin} \
-        --password ${_AIRFLOW_WWW_USER_PASSWORD:-admin123} \
-        --firstname Admin \
-        --lastname Admin \
-        --role Admin \
-        --email admin@example.com
-    environment:
-      <<: *airflow-common-env
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      BUCKET_NAME: ${BUCKET_NAME}
-      FILE_NAME: ${FILE_NAME}
-      _AIRFLOW_DB_UPGRADE: true
-    networks:
-      - airflow-network
+      bash -c "
+      until pg_isready -h $${PG_HOST} -p $${PG_PORT} -U $${PG_USER} -d $${PG_DB}; do
+        echo 'Waiting for PostgreSQL...'
+        sleep 2
+      done;
+      airflow db migrate
+      "
+    restart: on-failure
 
 volumes:
   pg-data:
