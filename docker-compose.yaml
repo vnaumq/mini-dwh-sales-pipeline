@@ -80,6 +80,8 @@ x-airflow-common:
     &airflow-common-depends-on
     postgres:
       condition: service_healthy
+    minio:
+      condition: service_healthy
 
 services:
   postgres:
@@ -90,6 +92,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+      - ./init_postgres:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -117,6 +120,16 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    environment:
+      <<: *airflow-common-env
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_DB: airflow
+      PG_USER: airflow
+      PG_PASSWORD: airflow
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s
@@ -273,5 +286,47 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin  # Измените на свои
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    volumes:
+      - minio-storage:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set local http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb local/airflow-bucket;
+      exit 0;
+      "
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com  # логин для pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: admin           # пароль для pgAdmin
+    ports:
+      - "5050:80"  # доступ через http://localhost:5050
+    depends_on:
+      - postgres
+    restart: always
+
 volumes:
   postgres-db-volume:
+  minio-storage:
