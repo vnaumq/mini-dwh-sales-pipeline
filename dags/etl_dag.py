@@ -1,5 +1,5 @@
 from config import MINIO_ENDPOINT, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD, PG_HOST, PG_PORT, PG_DB, PG_USER, PG_PASSWORD
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from datetime import datetime, timedelta
 import boto3
@@ -63,8 +63,5 @@ def my_dag():
     @task
     def process():
         main()
-
     process()
-
-
 my_dag()
