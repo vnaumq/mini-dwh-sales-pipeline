@@ -8,3 +8,4 @@ boto3
 apache-airflow-providers-amazon
 pydantic
 msgpack
+json

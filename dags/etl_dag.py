@@ -5,6 +5,14 @@ from datetime import datetime, timedelta
 import boto3
 from sqlalchemy import create_engine
 import pandas as pd
+import requests
+
+def extract():
+    url = 'https://mpstats.io/public/sellers.json?v=513946'
+    response = requests.get(url)
+    data = response.json()
+
+
 
 def main():
 
