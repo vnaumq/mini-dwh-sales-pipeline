@@ -130,6 +130,8 @@ services:
       PG_DB: ${POSTGRES_DB:-airflow}
       PG_USER: ${POSTGRES_USER:-airflow}
       PG_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      SITE_EMAIL: ${SITE_EMAIL}
+      SITE_PASSWORD: ${SITE_PASSWORD}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
       interval: 30s

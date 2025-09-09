@@ -9,3 +9,5 @@ apache-airflow-providers-amazon
 pydantic
 msgpack
 json
+webdriver_manager
+selenium
