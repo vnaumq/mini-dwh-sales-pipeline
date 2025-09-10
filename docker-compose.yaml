@@ -143,6 +143,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+      selenium:
+        condition: service_healthy
 
   airflow-dag-processor:
     <<: *airflow-common
@@ -327,6 +329,20 @@ services:
     depends_on:
       - postgres
     restart: always
+
+  selenium:
+      image: seleniarm/standalone-chromium:latest
+      container_name: selenium
+      ports:
+        - "4444:4444"
+      shm_size: 2g  # Prevents memory issues in the browser container
+      healthcheck:
+        test: ["CMD", "curl", "--fail", "http://localhost:4444"]
+        interval: 10s
+        timeout: 10s
+        retries: 5
+        start_period: 30s
+      restart: always
 
 volumes:
   postgres-db-volume:

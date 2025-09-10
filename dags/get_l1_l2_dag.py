@@ -56,9 +56,10 @@ def main():
             Key=KEY,
             ExtraArgs={'ContentType': 'text/csv'}
         )
-        print(f"Файл успешно загружен в MinIO: {BUCKET_NAME}/{KEY}")
-    except:
-        print(f"Ошибка при загрузке в MinIO")
+        print(f"File successfully uploaded to MinIO: {BUCKET_NAME}/{KEY}")
+    except Exception as e:
+        print(f"Error uploading to MinIO: {e}")
+        raise
 
 
 args = {

@@ -31,18 +31,28 @@ def main():
     )
 
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
-    df = pd.read_csv(obj)
+    df = pd.read_csv(obj['Body'])
+
+    df['l2_id'] = df['l2_id'].replace('', pd.NA, regex=False)
+    df['l2_id'] = df['l2_id'].fillna(df['l1_id'])
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
     session = endpoints.get_session()
 
     temp_dfs = []
+    lenght = len(df['l2_id'])
+    count = 0
     for l2_id in df['l2_id']:
+        count+=1
+        if count % 50 == 0:
+            print(f'{count}/{lenght}')
         data = endpoints.get_l3(yesterday_str, l2_id, today_str, session, cookies_dict)
         df_temp = pd.json_normalize(data['data'])
         df_temp['l2_id'] = l2_id
         temp_dfs.append(df_temp)
         time.sleep(1)
+
+    print('FINISH')
 
     if temp_dfs:
         df_l3 = pd.concat(temp_dfs, ignore_index=True)
@@ -58,15 +68,16 @@ def main():
 
     # Загрузка файла в MinIO
     try:
-        s3.upload_fileobj(
-            Fileobj=csv_buffer,
-            Bucket=BUCKET_NAME,
-            Key=KEY_LOAD,
-            ExtraArgs={'ContentType': 'text/csv'}
-        )
-        print(f"Файл успешно загружен в MinIO: {BUCKET_NAME}/{KEY_LOAD}")
-    except:
-        print(f"Ошибка при загрузке в MinIO")
+            s3.upload_fileobj(
+                Fileobj=csv_buffer,
+                Bucket=BUCKET_NAME,
+                Key=KEY_LOAD,
+                ExtraArgs={'ContentType': 'text/csv'}
+            )
+            print(f"File successfully uploaded to MinIO: {BUCKET_NAME}/{KEY_LOAD}")
+    except Exception as e:
+            print(f"Error uploading to MinIO: {e}")
+            raise
 
 args = {
     "email": [],
