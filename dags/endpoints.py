@@ -67,7 +67,19 @@ def get_l1_l2(yesterday_str: str, today_str: str, session: requests.Session, coo
 
 def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
 
-    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{yesterday_str}/{l2_id}.json?dns-cache={today_str}_23-1'
+    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{yesterday_str}/{l2_id}.json?dns-cache={today_str}_09-1'
+    response = session.get(url, cookies=cookies_dict)
+    if response.status_code == 200:
+        data = response.json()
+    else:
+        print(response.text)
+        print(url)
+
+    return data
+
+def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
+
+    url = f''
     response = session.get(url, cookies=cookies_dict)
     if response.status_code == 200:
         data = response.json()
