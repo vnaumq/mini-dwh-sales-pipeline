@@ -43,7 +43,7 @@ def main():
         count+=1
         if count % 50 == 0:
             print(f'{count}/{lenght}')
-        data = endpoints.get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dict)
+        data = endpoints.get_info_30_days(yesterday_str, l3_id, session, cookies_dict)
         df_temp = pd.json_normalize(data['data'])
         temp_dfs.append(df_temp)
         time.sleep(1)
