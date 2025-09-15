@@ -44,7 +44,11 @@ def main():
         if count % 50 == 0:
             print(f'{count}/{lenght}')
         data = endpoints.get_info_30_days(yesterday_str, l3_id, session, cookies_dict)
-        df_temp = pd.json_normalize(data['data'])
+        df_temp = pd.json_normalize(data['totals']['trend'])
+        df_temp['dt'] = pd.to_datetime(df['date']).dt.date
+        df_temp.drop(['date'],axis=1)
+        df_temp['l3_id'] = l3_id
+
         temp_dfs.append(df_temp)
         time.sleep(1)
 
@@ -52,7 +56,7 @@ def main():
 
     if temp_dfs:
         df_info = pd.concat(temp_dfs, ignore_index=True)
-        df_info = df_info.rename(columns={'id': 'l3_id', 'name': 'l3_name'})\
+        df_info = df_info.rename(columns={'name': 'l3_name'})\
             .drop(['url', 'path', 'isFavorite'], axis=1)
     else:
         df_info = pd.DataFrame()

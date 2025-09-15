@@ -5,6 +5,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+from urllib.parse import quote
+import json
 
 def get_cookies_local(email: str, password: str) -> dict:
     """getting cookies"""
@@ -108,9 +110,29 @@ def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Ses
 
     return data
 
-def get_info_30_days(yesterday_str: str, l3_id: int, session: requests.Session, cookies_dict: dict):
+def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
 
-    url = f'https://eggheads.solutions/analytics/wbCategory/getTotals/{l3_id}.json?checkDate={yesterday_str}&periodDays=30'
+    # Формируем JSON query
+    query_params = {
+        "start": 0,
+        "length": 0,
+        "orderBy": "ordersSum",
+        "orderDirection": "desc",
+        "checkDate": yesterday_str,
+        "periodDays": 30,
+        "trendType": "day",
+        "filters": {}
+    }
+
+    encoded_query = quote(json.dumps(query_params))
+
+    url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
+
     response = session.get(url, cookies=cookies_dict)
+    if response.status_code == 200:
+        data = response.json()
+    else:
+        print(response.text)
+        print(url)
 
-    return response
+    return data
