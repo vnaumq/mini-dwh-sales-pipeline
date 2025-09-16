@@ -90,11 +90,13 @@ def get_session():
 def get_l1_l2(yesterday_str: str, today_str: str, session: requests.Session, cookies_dict: dict):
 
     url = f'https://eggheads.solutions/analytics/wbCategoryTree/getParentTree/{yesterday_str}.json?dns-cache={today_str}_09-1'
+    response = session.get(url, cookies=cookies_dict)
+
     if response.status_code == 200:
-        response = session.get(url, cookies=cookies_dict)
         data = response.json()
     else:
         print(response.text)
+        print(url)
 
     return data
 
@@ -102,6 +104,7 @@ def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Ses
 
     url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{yesterday_str}/{l2_id}.json?dns-cache={today_str}_09-1'
     response = session.get(url, cookies=cookies_dict)
+
     if response.status_code == 200:
         data = response.json()
     else:
@@ -127,8 +130,8 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
     encoded_query = quote(json.dumps(query_params))
 
     url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
-
     response = session.get(url, cookies=cookies_dict)
+
     if response.status_code == 200:
         data = response.json()
     else:
