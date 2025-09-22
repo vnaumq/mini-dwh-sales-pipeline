@@ -1,0 +1,67 @@
+{"timestamp":"2025-09-22T19:39:44.859911","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-09-22T19:39:44.860729","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-09-22T19:39:53.613415Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:56.733769Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:56.829933Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:56.954138Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:56.988786Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:57.583921Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:57.756312Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:57.975112Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:58.473570Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:58.638133Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:59.498407Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:39:59.784664Z","level":"info","event":"429 Too Many Requests, retry after 4s (attempt 3)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:00.015438Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:00.193946Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:00.674988Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:01.345687Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:01.555886Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:01.644937Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:02.444368Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:02.672287Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:03.156903Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:03.254669Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:04.048510Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:04.178785Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:04.412349Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:04.439746Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:05.176556Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:05.847192Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:06.208910Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:06.239963Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:06.266582Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.139195Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.250135Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.310009Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.434741Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.878484Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:07.890080Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:09.112988Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:09.296344Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:09.366295Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:09.448194Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:10.184135Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:10.417246Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:10.777057Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:10.808289Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:11.249123Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:11.443888Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:12.111330Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:12.178531Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:12.434036Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:12.906019Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:13.573662Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:13.867672Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:14.719417Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:14.742079Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:14.890655Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:14.911917Z","level":"info","event":"429 Too Many Requests, retry after 2s (attempt 2)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:15.010285Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:16.234192Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:16.383854Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:16.728981Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:16.932773Z","level":"info","event":"429 Too Many Requests, retry after 4s (attempt 3)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:40:16.982948Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:52:10.346096Z","level":"error","event":"Server indicated the task shouldn't be running anymore. Terminating process","detail":{"detail":{"reason":"not_running","message":"TI is no longer in the running state and task should terminate","current_state":"failed"}},"logger":"task"}
+{"timestamp":"2025-09-22T19:52:15.361445Z","level":"error","event":"Task killed!","logger":"task"}

@@ -11,7 +11,7 @@ import aiohttp
 import asyncio
 
 
-semaphore = asyncio.Semaphore(15)
+semaphore = asyncio.Semaphore(10)
 
 def get_cookies_local(email: str, password: str) -> dict:
     """getting cookies"""
@@ -156,7 +156,7 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
         print(url)
         return data['totals']
 
-async def get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dict):
+async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cookies_dict):
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -166,14 +166,8 @@ async def get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dic
     query_params = {
         "start": 0,
         "length": 0,
-        "orderBy": "ordersSum",
-        "orderDirection": "desc",
         "checkDate": yesterday_str,
         "periodDays": 30,
-        "trendType": "day",
-        "filters": {
-            "showFavoritesOnly": {"value": False}
-        }
     }
     encoded_query = quote(json.dumps(query_params))
 
@@ -195,7 +189,6 @@ async def get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dic
                     return data.get("totals", [])
                 elif response.status == 429:
                     wait_time = 2 ** attempt  # экспоненциальный backoff
-                    print(f"429 Too Many Requests, retry after {wait_time}s (attempt {attempt+1})")
                     await asyncio.sleep(wait_time)
                     continue
                 else:

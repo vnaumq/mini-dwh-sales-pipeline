@@ -10,8 +10,9 @@ from io import BytesIO
 from airflow.sdk import dag, task
 import endpoints
 
+
 async def process_l3_id(l3_id, yesterday_str, today_str, session, cookies_dict):
-    data = await endpoints.get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dict)
+    data = await endpoints.get_info_30_async_days(yesterday_str, l3_id, today_str, session, cookies_dict)
     if not data:
         return pd.DataFrame()
 
@@ -25,6 +26,9 @@ async def process_l3_id(l3_id, yesterday_str, today_str, session, cookies_dict):
     trend_df = pd.json_normalize(df_exploded['trend'])
     df_exploded = df_exploded.drop(columns=['trend']).reset_index(drop=True)
     df_temp = pd.concat([df_exploded, trend_df], axis=1)
+
+    print(1)
+
     return df_temp
 
 
@@ -48,7 +52,6 @@ async def main():
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
     df = df[['l3_id']].drop_duplicates()
-    df = df.head(50)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 
