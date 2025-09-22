@@ -1,0 +1,5 @@
+{"timestamp":"2025-09-22T14:55:43.800179","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-09-22T14:55:43.800899","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-09-22T14:55:55.930436Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T14:56:25.739215Z","level":"info","event":"10/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T14:57:20.220930Z","level":"info","event":"20/11235","chan":"stdout","logger":"task"}

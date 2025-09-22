@@ -17,7 +17,7 @@ def main():
     today_str = today.strftime('%Y-%m-%d')
     yesterday_str = yesterday.strftime('%Y-%m-%d')
     BUCKET_NAME  = "airflow-bucket"
-    KEY = f"data/{today_str}/l1_l2_data.csv"
+    KEY = f"data/l1_l2_data.csv"
 
     s3 = boto3.client(
         "s3",

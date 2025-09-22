@@ -1,0 +1,18 @@
+{"timestamp":"2025-09-22T18:02:18.270559","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-09-22T18:02:18.271437","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-09-22T18:02:29.846746Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:02:57.850214Z","level":"info","event":"10/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:03:27.915354Z","level":"info","event":"20/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:03:58.185519Z","level":"info","event":"30/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:04:51.491770Z","level":"info","event":"40/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:05:43.969387Z","level":"info","event":"50/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:06:36.912634Z","level":"info","event":"60/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:07:25.042627Z","level":"info","event":"70/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:08:16.746480Z","level":"info","event":"80/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:09:10.721432Z","level":"info","event":"90/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:10:01.455129Z","level":"info","event":"100/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:10:49.802706Z","level":"info","event":"110/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:11:40.200221Z","level":"info","event":"120/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:12:30.631100Z","level":"info","event":"130/11235","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T18:12:55.810170Z","level":"error","event":"Server indicated the task shouldn't be running anymore. Terminating process","detail":{"detail":{"reason":"not_running","message":"TI is no longer in the running state and task should terminate","current_state":"failed"}},"logger":"task"}
+{"timestamp":"2025-09-22T18:13:00.844640Z","level":"error","event":"Task killed!","logger":"task"}

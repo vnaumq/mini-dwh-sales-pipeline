@@ -17,7 +17,7 @@ def main():
     today_str = today.strftime('%Y-%m-%d')
     yesterday_str = yesterday.strftime('%Y-%m-%d')
     BUCKET_NAME  = "airflow-bucket"
-    KEY_READ = f"data/{today_str}/l3_data.csv"
+    KEY_READ = f"data/l3_data_mini.csv"
     KEY_LOAD = f"data/{today_str}/info_30_days.csv"
 
     s3 = boto3.client(
@@ -41,13 +41,21 @@ def main():
     count = 0
     for l3_id in df['l3_id']:
         count+=1
-        if count % 50 == 0:
+        if count % 10 == 0:
             print(f'{count}/{lenght}')
-        data = endpoints.get_info_30_days(yesterday_str, l3_id, session, cookies_dict)
-        df_temp = pd.json_normalize(data['totals']['trend'])
-        df_temp['dt'] = pd.to_datetime(df['date']).dt.date
-        df_temp.drop(['date'],axis=1)
+        data = endpoints.get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dict)
+        df_temp = pd.json_normalize(data)
+        df_temp = df_temp[['name', 'trend']]
         df_temp['l3_id'] = l3_id
+        # Шаг 1: Разворачиваем список в столбце trend
+        df_exploded = df_temp.explode('trend')
+
+        # Шаг 2: Нормализуем словари в столбце trend
+        trend_df = pd.json_normalize(df_exploded['trend'])
+
+        # Шаг 3: Объединяем развернутые данные с исходным DataFrame
+        df_exploded = df_exploded.drop(columns=['trend']).reset_index(drop=True)
+        df_temp = pd.concat([df_exploded, trend_df], axis=1)
 
         temp_dfs.append(df_temp)
         time.sleep(1)
@@ -56,8 +64,6 @@ def main():
 
     if temp_dfs:
         df_info = pd.concat(temp_dfs, ignore_index=True)
-        df_info = df_info.rename(columns={'name': 'l3_name'})\
-            .drop(['url', 'path', 'isFavorite'], axis=1)
     else:
         df_info = pd.DataFrame()
 

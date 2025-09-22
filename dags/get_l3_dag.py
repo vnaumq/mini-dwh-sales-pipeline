@@ -18,8 +18,8 @@ def main():
     today_str = today.strftime('%Y-%m-%d')
     yesterday_str = yesterday.strftime('%Y-%m-%d')
     BUCKET_NAME  = "airflow-bucket"
-    KEY_READ = f"data/{today_str}/l1_l2_data.csv"
-    KEY_LOAD = f"data/{today_str}/l3_data.csv"
+    KEY_READ = f"data/l1_l2_data.csv"
+    KEY_LOAD = f"data/l3_data.csv"
 
 
     s3 = boto3.client(

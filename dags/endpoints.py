@@ -79,6 +79,8 @@ def get_cookies(email: str, password: str) -> dict:
             driver.quit()
         cookies_dict = {}
 
+    print('cookie done')
+
     return cookies_dict
 
 def get_session():
@@ -104,7 +106,6 @@ def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Ses
 
     url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{yesterday_str}/{l2_id}.json?dns-cache={today_str}_09-1'
     response = session.get(url, cookies=cookies_dict)
-
     if response.status_code == 200:
         data = response.json()
     else:
@@ -124,18 +125,22 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
         "checkDate": yesterday_str,
         "periodDays": 30,
         "trendType": "day",
-        "filters": {}
+        "filters": {
+            "showFavoritesOnly": {"value": False}
+        }
     }
 
     encoded_query = quote(json.dumps(query_params))
-
+    # Generate dynamic dns-cache
+    response = session.post(f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',cookies=cookies_dict)
+    time.sleep(1)
     url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
     response = session.get(url, cookies=cookies_dict)
 
     if response.status_code == 200:
         data = response.json()
+        return data['totals']
     else:
         print(response.text)
         print(url)
-
-    return data
+        return data['totals']
