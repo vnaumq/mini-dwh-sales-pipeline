@@ -1,0 +1,10 @@
+{"timestamp":"2025-09-22T19:35:42.512618","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-09-22T19:35:42.513209","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-09-22T19:35:50.721772Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:52.259324Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:52.358767Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:52.382155Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:52.436896Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:53.743533Z","level":"info","event":"FINISH","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:53.763524Z","level":"info","event":"File successfully uploaded to MinIO: airflow-bucket/data/2025-09-22/info_30_days.csv","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:35:53.764666","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator"}

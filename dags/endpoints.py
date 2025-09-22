@@ -7,6 +7,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 from urllib.parse import quote
 import json
+import aiohttp
+import asyncio
+
+
+semaphore = asyncio.Semaphore(15)
 
 def get_cookies_local(email: str, password: str) -> dict:
     """getting cookies"""
@@ -116,6 +121,12 @@ def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Ses
 
 def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
 
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    })
+
     # Формируем JSON query
     query_params = {
         "start": 0,
@@ -133,7 +144,7 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
     encoded_query = quote(json.dumps(query_params))
     # Generate dynamic dns-cache
     response = session.post(f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',cookies=cookies_dict)
-    time.sleep(1)
+
     url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
     response = session.get(url, cookies=cookies_dict)
 
@@ -144,3 +155,51 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
         print(response.text)
         print(url)
         return data['totals']
+
+async def get_info_30_days(yesterday_str, l3_id, today_str, session, cookies_dict):
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    }
+
+    query_params = {
+        "start": 0,
+        "length": 0,
+        "orderBy": "ordersSum",
+        "orderDirection": "desc",
+        "checkDate": yesterday_str,
+        "periodDays": 30,
+        "trendType": "day",
+        "filters": {
+            "showFavoritesOnly": {"value": False}
+        }
+    }
+    encoded_query = quote(json.dumps(query_params))
+
+    async with semaphore:  # ограничиваем параллельность
+        # POST — buildCache
+        async with session.post(
+            f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',
+            cookies=cookies_dict,
+            headers=headers
+        ) as resp:
+            await resp.text()
+
+        url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
+
+        for attempt in range(5):  # до 5 попыток при 429
+            async with session.get(url, cookies=cookies_dict, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get("totals", [])
+                elif response.status == 429:
+                    wait_time = 2 ** attempt  # экспоненциальный backoff
+                    print(f"429 Too Many Requests, retry after {wait_time}s (attempt {attempt+1})")
+                    await asyncio.sleep(wait_time)
+                    continue
+                else:
+                    text = await response.text()
+                    print(f"Error {response.status}: {text}")
+                    return []
+        return []

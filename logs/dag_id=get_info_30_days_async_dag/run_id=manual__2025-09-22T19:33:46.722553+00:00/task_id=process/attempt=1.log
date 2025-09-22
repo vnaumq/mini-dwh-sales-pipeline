@@ -1,0 +1,16 @@
+{"timestamp":"2025-09-22T19:33:47.314978","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-09-22T19:33:47.315627","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-09-22T19:33:54.948313Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.780818Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.854260Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.864168Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.899108Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.918209Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.919711Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.952700Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:55.978165Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:56.006343Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:56.044480Z","level":"info","event":"429 Too Many Requests, retry after 1s (attempt 1)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:57.331151Z","level":"info","event":"FINISH","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:57.368705Z","level":"info","event":"File successfully uploaded to MinIO: airflow-bucket/data/2025-09-22/info_30_days.csv","chan":"stdout","logger":"task"}
+{"timestamp":"2025-09-22T19:33:57.370240","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator"}

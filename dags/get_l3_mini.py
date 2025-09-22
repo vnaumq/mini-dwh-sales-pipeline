@@ -35,21 +35,22 @@ def main():
 
     df['l2_id'] = df['l2_id'].replace('', pd.NA, regex=False)
     df['l2_id'] = df['l2_id'].fillna(df['l1_id'])
+    df = df[~df['l1_name'].isin(['Сделано в России', 'Акции'])]
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
     session = endpoints.get_session()
 
     temp_dfs = []
-    lenght = len(df['l2_id'])
+    lenght = len(df['l2_id'].drop_duplicates())
     count = 0
-    for l2_id in df['l2_id']:
+    for l2_id in df['l2_id'].drop_duplicates():
         count+=1
         if count % 50 == 0:
             print(f'{count}/{lenght}')
         data = endpoints.get_l3(yesterday_str, l2_id, today_str, session, cookies_dict)
         df_temp = pd.json_normalize(data['data'])
         threshold = df_temp['orders'].quantile(0.75)
-        df_temp = df_temp[df_temp['orders'] > threshold]
+        df_temp = df_temp[(df_temp['orders'] > threshold)]
         df_temp['l2_id'] = l2_id
         temp_dfs.append(df_temp)
         time.sleep(1)
