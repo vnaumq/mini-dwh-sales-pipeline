@@ -196,3 +196,62 @@ async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cooki
                     print(f"Error {response.status}: {text}")
                     return []
         return []
+
+def get_info_subjects(yesterday_str: str, today_str: str, session: requests.Session, cookies_dict: dict):
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    })
+
+    # Формируем JSON query
+    query_params = {
+        "start": 0,
+        "length": 7000,
+        "orderBy": "totalItems",
+        "orderDirection": "desc",
+        "checkDate": yesterday_str,
+        "filters": {
+            "showFavoritesOnly": {"value": False}
+        }
+    }
+
+    encoded_query = quote(json.dumps(query_params))
+
+    url = f"https://eggheads.solutions/analytics/wbSubjects/rating?query={encoded_query}&dns-cache={today_str}_09-1"
+    response = session.get(url, cookies=cookies_dict)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        print(response.text)
+        print(url)
+        return data
+
+async def get_async_season_ratio(subject_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
+
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    })
+
+    async with semaphore:
+        url = f"https://eggheads.solutions/clientAnalytics/subject/seasonRatio/{subject_id}?dns-cache={today_str}_09-1"
+        for attempt in range(5):
+            async with session.get(url, cookies_dict) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get("coefficients", [])
+                elif response.status == 429:
+                    wait_time = 2 ** attempt
+                    await asyncio.sleep(wait_time)
+                    continue
+                else:
+                    text = await response.text()
+                    print(f"Error {response.status}: {text}")
+
+                    return []
+
+        return []
