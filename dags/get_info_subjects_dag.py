@@ -28,7 +28,7 @@ def main():
     )
 
     session = endpoints.get_session()
-    cookie = endpoints.get_cookies()
+    cookie = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 
     data = endpoints.get_info_subjects(yesterday_str, today_str, session, cookie)
     df = pd.json_normalize(data['items'])

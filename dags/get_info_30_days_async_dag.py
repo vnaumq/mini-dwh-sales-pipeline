@@ -27,8 +27,6 @@ async def process_l3_id(l3_id, yesterday_str, today_str, session, cookies_dict):
     df_exploded = df_exploded.drop(columns=['trend']).reset_index(drop=True)
     df_temp = pd.concat([df_exploded, trend_df], axis=1)
 
-    print(1)
-
     return df_temp
 
 
@@ -52,6 +50,7 @@ async def main():
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
     df = df[['l3_id']].drop_duplicates()
+    df = df.head(1000)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 

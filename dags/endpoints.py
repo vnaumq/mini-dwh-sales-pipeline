@@ -34,13 +34,13 @@ def get_cookies_local(email: str, password: str) -> dict:
         cookies = driver.get_cookies()
         driver.quit()
 
-        cookies_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookies = {cookie['name']: cookie['value'] for cookie in cookies}
 
     except Exception as e:
         print(f"Ошибка: {e}")
         driver.quit()
 
-    return cookies_dict
+    return cookies
 
 def get_cookies(email: str, password: str) -> dict:
     """getting cookies"""
@@ -76,17 +76,17 @@ def get_cookies(email: str, password: str) -> dict:
         cookies = driver.get_cookies()
         driver.quit()
 
-        cookies_dict = {cookie['name']: cookie['value'] for cookie in cookies}
+        cookies = {cookie['name']: cookie['value'] for cookie in cookies}
 
     except Exception as e:
         print(f"Ошибка: {e}")
         if 'driver' in locals():
             driver.quit()
-        cookies_dict = {}
+        cookies = {}
 
     print('cookie done')
 
-    return cookies_dict
+    return cookies
 
 def get_session():
 
@@ -94,10 +94,10 @@ def get_session():
 
     return session
 
-def get_l1_l2(yesterday_str: str, today_str: str, session: requests.Session, cookies_dict: dict):
+def get_l1_l2(check_dt: str, today: str, session: requests.Session, cookies: dict):
 
-    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getParentTree/{yesterday_str}.json?dns-cache={today_str}_09-1'
-    response = session.get(url, cookies=cookies_dict)
+    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getParentTree/{check_dt}.json?dns-cache={today}_09-1'
+    response = session.get(url, cookies=cookies)
 
     if response.status_code == 200:
         data = response.json()
@@ -107,10 +107,10 @@ def get_l1_l2(yesterday_str: str, today_str: str, session: requests.Session, coo
 
     return data
 
-def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
+def get_l3(check_dt: str, l2_id: int, today: str, session: requests.Session, cookies: dict):
 
-    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{yesterday_str}/{l2_id}.json?dns-cache={today_str}_09-1'
-    response = session.get(url, cookies=cookies_dict)
+    url = f'https://eggheads.solutions/analytics/wbCategoryTree/getTreeItems/{check_dt}/{l2_id}.json?dns-cache={today}_09-1'
+    response = session.get(url, cookies=cookies)
     if response.status_code == 200:
         data = response.json()
     else:
@@ -119,7 +119,7 @@ def get_l3(yesterday_str: str, l2_id: int, today_str: str, session: requests.Ses
 
     return data
 
-def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
+def get_info_30_days(check_dt: str, l3_id: int, today: str, session: requests.Session, cookies: dict):
 
     session.headers.update({
         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
         "length": 0,
         "orderBy": "ordersSum",
         "orderDirection": "desc",
-        "checkDate": yesterday_str,
+        "checkDate": check_dt,
         "periodDays": 30,
         "trendType": "day",
         "filters": {
@@ -143,10 +143,10 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
 
     encoded_query = quote(json.dumps(query_params))
     # Generate dynamic dns-cache
-    response = session.post(f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',cookies=cookies_dict)
+    response = session.post(f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',cookies=cookies)
 
-    url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
-    response = session.get(url, cookies=cookies_dict)
+    url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today}_09-1"
+    response = session.get(url, cookies=cookies)
 
     if response.status_code == 200:
         data = response.json()
@@ -156,7 +156,7 @@ def get_info_30_days(yesterday_str: str, l3_id: int, today_str: str, session: re
         print(url)
         return data['totals']
 
-async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cookies_dict):
+async def get_info_30_async_days(check_dt: str, l3_id: int, today: str, session: aiohttp.ClientSession, cookies: dict):
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -166,7 +166,7 @@ async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cooki
     query_params = {
         "start": 0,
         "length": 0,
-        "checkDate": yesterday_str,
+        "checkDate": check_dt,
         "periodDays": 30,
     }
     encoded_query = quote(json.dumps(query_params))
@@ -175,15 +175,15 @@ async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cooki
         # POST — buildCache
         async with session.post(
             f'https://eggheads.solutions/analytics/wbCategory/buildCache/{l3_id}',
-            cookies=cookies_dict,
+            cookies=cookies,
             headers=headers
         ) as resp:
             await resp.text()
 
-        url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today_str}_09-1"
+        url = f"https://eggheads.solutions/analytics/wbCategory/getBrandsList/{l3_id}.json?query={encoded_query}&dns-cache={today}_09-1"
 
         for attempt in range(5):  # до 5 попыток при 429
-            async with session.get(url, cookies=cookies_dict, headers=headers) as response:
+            async with session.get(url, cookies=cookies, headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("totals", [])
@@ -197,7 +197,7 @@ async def get_info_30_async_days(yesterday_str, l3_id, today_str, session, cooki
                     return []
         return []
 
-def get_info_subjects(yesterday_str: str, today_str: str, session: requests.Session, cookies_dict: dict):
+def get_info_subjects(check_dt: str, today: str, session: requests.Session, cookies: dict):
     session.headers.update({
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -210,7 +210,7 @@ def get_info_subjects(yesterday_str: str, today_str: str, session: requests.Sess
         "length": 7000,
         "orderBy": "totalItems",
         "orderDirection": "desc",
-        "checkDate": yesterday_str,
+        "checkDate": check_dt,
         "filters": {
             "showFavoritesOnly": {"value": False}
         }
@@ -218,8 +218,8 @@ def get_info_subjects(yesterday_str: str, today_str: str, session: requests.Sess
 
     encoded_query = quote(json.dumps(query_params))
 
-    url = f"https://eggheads.solutions/analytics/wbSubjects/rating?query={encoded_query}&dns-cache={today_str}_09-1"
-    response = session.get(url, cookies=cookies_dict)
+    url = f"https://eggheads.solutions/analytics/wbSubjects/rating?query={encoded_query}&dns-cache={today}_09-1"
+    response = session.get(url, cookies=cookies)
 
     if response.status_code == 200:
         data = response.json()
@@ -229,7 +229,7 @@ def get_info_subjects(yesterday_str: str, today_str: str, session: requests.Sess
         print(url)
         return data
 
-async def get_async_season_ratio(subject_id: int, today_str: str, session: requests.Session, cookies_dict: dict):
+async def get_async_season_ratio(subject_id: int, today: str, session: aiohttp.ClientSession, cookies: dict):
 
     session.headers.update({
         "Content-Type": "application/json",
@@ -238,9 +238,9 @@ async def get_async_season_ratio(subject_id: int, today_str: str, session: reque
     })
 
     async with semaphore:
-        url = f"https://eggheads.solutions/clientAnalytics/subject/seasonRatio/{subject_id}?dns-cache={today_str}_09-1"
+        url = f"https://eggheads.solutions/clientAnalytics/subject/seasonRatio/{subject_id}?dns-cache={today}_09-1"
         for attempt in range(5):
-            async with session.get(url, cookies_dict) as response:
+            async with session.get(url, cookies=cookies) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("coefficients", [])
@@ -254,4 +254,53 @@ async def get_async_season_ratio(subject_id: int, today_str: str, session: reque
 
                     return []
 
+        return []
+
+async def get_async_info_subjects_30_days(check_dt: str, subject_id: int, today: str, session: aiohttp.ClientSession, cookies: dict):
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    }
+
+    # Формируем JSON query based on the provided URL
+    query_params = {
+        "start": 0,
+        "length": 0,
+        "checkDate": check_dt,
+        "periodDays": "30",
+        "trendType": "day",
+        "filters": {
+            "showFavoritesOnly": {"value": False},
+            "showMyProducts": {"value": False},
+            "showNewProducts": {"value": False}
+        }
+    }
+
+    encoded_query = quote(json.dumps(query_params))
+    url = f"https://eggheads.solutions/analytics/wbSubject/getProductsList/{subject_id}.json?query={encoded_query}&dns-cache={today}_09-1"
+
+    async with semaphore:  # Ограничиваем параллельность
+
+        async with session.post(
+            f'https://eggheads.solutions/analytics/wbSubject/buildCache/{subject_id}',
+            cookies=cookies,
+            headers=headers
+        ) as resp:
+            await resp.text()
+
+        for attempt in range(5):  # До 5 попыток при 429
+            async with session.get(url, cookies=cookies, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get("totals", [])
+                elif response.status == 429:
+                    wait_time = 2 ** attempt  # Экспоненциальный backoff
+                    await asyncio.sleep(wait_time)
+                    continue
+                else:
+                    text = await response.text()
+                    print(f"Error {response.status}: {text}")
+                    print(f"URL: {url}")
+                    return []
         return []

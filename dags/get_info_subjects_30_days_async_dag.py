@@ -11,8 +11,8 @@ from airflow.sdk import dag, task
 import endpoints
 
 
-async def process(subject_id, today_str, session, cookies_dict):
-    data = await endpoints.get_async_season_ratio(subject_id, today_str, session, cookies_dict)
+async def process(yesterday_str, subject_id, today_str, session, cookies_dict):
+    data = await endpoints.get_async_info_subjects_30_days(yesterday_str, subject_id, today_str, session, cookies_dict)
     if not data:
         return pd.DataFrame()
 
@@ -20,7 +20,12 @@ async def process(subject_id, today_str, session, cookies_dict):
     if df_temp.empty:
         return pd.DataFrame()
 
+    df_temp = df_temp[['name', 'trend']]
     df_temp['subject_id'] = subject_id
+    df_exploded = df_temp.explode('trend')
+    trend_df = pd.json_normalize(df_exploded['trend'])
+    df_exploded = df_exploded.drop(columns=['trend']).reset_index(drop=True)
+    df_temp = pd.concat([df_exploded, trend_df], axis=1)
 
     return df_temp
 
@@ -34,7 +39,7 @@ async def main():
 
     BUCKET_NAME = "airflow-bucket"
     KEY_READ = f"data/info_subjects.csv"
-    KEY_LOAD = f"data/season_ratio.csv"
+    KEY_LOAD = f"data/{today_str}/info_subject_30_days.csv"
 
     s3 = boto3.client(
         "s3",
@@ -47,13 +52,14 @@ async def main():
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
     df[['subject_id']] = df[['subjectId']]
-    # df = df.head(2000)
+    df = df[['subject_id']].drop_duplicates()
+    df = df.head(1000)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 
     async with aiohttp.ClientSession() as session:
         tasks = [
-            process(subject_id, today_str, session, cookies_dict)
+            process(yesterday_str, subject_id, today_str, session, cookies_dict)
             for subject_id in df['subject_id']
         ]
         results = await asyncio.gather(*tasks)
@@ -95,7 +101,7 @@ args = {
 }
 
 @dag(
-    dag_id="get_season_ratio_async_dag",
+    dag_id="get_info_subjects_30_days_async_dag",
     schedule=None,
     start_date=datetime(year=2025, month=8, day=26),
     catchup=False,
