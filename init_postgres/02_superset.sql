@@ -1,15 +1,7 @@
--- Создание базы данных superset если не существует
-SELECT 'CREATE DATABASE superset'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'superset')\gexec
+#!/bin/bash
+set -e
 
--- Создание пользователя superset если не существует
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'superset') THEN
-        CREATE USER superset WITH PASSWORD 'superset';
-    END IF;
-END
-$$;
-
--- Выдача прав
-GRANT ALL PRIVILEGES ON DATABASE superset TO superset;
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    CREATE DATABASE superset;
+    GRANT ALL PRIVILEGES ON DATABASE superset TO $POSTGRES_USER;
+EOSQL

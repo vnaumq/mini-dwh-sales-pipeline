@@ -86,6 +86,7 @@ x-airflow-common:
 services:
   postgres:
     image: postgres:13
+    env_file: .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-airflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
@@ -103,6 +104,7 @@ services:
   airflow-apiserver:
     <<: *airflow-common
     command: api-server
+    env_file: .env
     ports:
       - "8080:8080"
     healthcheck:
@@ -120,6 +122,7 @@ services:
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    env_file: .env
     environment:
       <<: *airflow-common-env
       MINIO_ENDPOINT: http://minio:9000
@@ -149,6 +152,7 @@ services:
   airflow-dag-processor:
     <<: *airflow-common
     command: dag-processor
+    env_file: .env
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
       interval: 30s
@@ -164,6 +168,7 @@ services:
   airflow-init:
     <<: *airflow-common
     entrypoint: /bin/bash
+    env_file: .env
     # yamllint disable rule:line-length
     command:
       - -c
@@ -256,6 +261,7 @@ services:
     <<: *airflow-common
     profiles:
       - debug
+    env_file: .env
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: "0"
@@ -275,6 +281,7 @@ services:
     command: celery flower
     profiles:
       - flower
+    env_file: .env
     ports:
       - "5555:5555"
     healthcheck:
@@ -291,6 +298,7 @@ services:
 
   minio:
     image: minio/minio:latest
+    env_file: .env
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -311,6 +319,7 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    env_file: .env
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin};
@@ -321,6 +330,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4:7
     container_name: pgadmin
+    env_file: .env
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
@@ -333,6 +343,7 @@ services:
   selenium:
       image: seleniarm/standalone-chromium:latest
       container_name: selenium
+      env_file: .env
       ports:
         - "4444:4444"
       shm_size: 2g  # Prevents memory issues in the browser container
@@ -344,32 +355,52 @@ services:
         start_period: 30s
       restart: always
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - all_in_one
-
   superset:
+    image: apache/superset:latest
     container_name: superset
-    build:
-      context: ./superset_dockerfile
-      dockerfile: Dockerfile
+    env_file: .env
     environment:
-      ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME}
-      ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD}
-    volumes:
-      - ./superset_data:/app/superset_home
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-this_is_not_a_secure_key}
+      SUPERSET_DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/superset
     ports:
-      - '8088:8088'
+      - "8088:8088"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/superset:/app/superset_home
     depends_on:
-      - postgres
-    networks:
-      - all_in_one
+      postgres:
+        condition: service_healthy
+      superset-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8088/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+
+  superset-init:
+    image: apache/superset:latest
+    container_name: superset-init
+    env_file: .env
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-this_is_not_a_secure_key}
+      SUPERSET_DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/superset
+      SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+    command: >
+      /bin/sh -c "
+      superset db upgrade &&
+      superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME:-admin} --firstname Admin --lastname User --email admin@example.com --password ${SUPERSET_ADMIN_PASSWORD:-admin} &&
+      superset init
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/superset:/app/superset_home
 
 volumes:
   postgres-db-volume:
   minio-storage:
+  superset-home:
