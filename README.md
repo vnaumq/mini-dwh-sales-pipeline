@@ -101,7 +101,7 @@ docker compose logs -f postgres minio
 
 ### Схема проекта
 
-```mermaid
+```
 graph LR
   subgraph Developer
     DEV[Локальная машина]
