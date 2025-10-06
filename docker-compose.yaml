@@ -355,54 +355,6 @@ services:
         start_period: 30s
       restart: always
 
-  superset:
-    build:
-      context: ./superset
-    container_name: superset
-    env_file: .env
-    environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-this_is_not_a_secure_key}
-      SUPERSET_DATABASE_URI: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/superset
-    ports:
-      - "8088:8088"
-    volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}/superset:/app/superset_home
-    depends_on:
-      postgres:
-        condition: service_healthy
-      superset-init:
-        condition: service_completed_successfully
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8088/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: always
-
-  superset-init:
-    build:
-      context: ./superset
-    container_name: superset-init
-    env_file: .env
-    environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-this_is_not_a_secure_key}
-      SUPERSET_DATABASE_URI: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres/superset
-      SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME:-admin}
-      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
-    command: >
-      /bin/sh -c "
-      superset db upgrade &&
-      superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME:-admin} --firstname Admin --lastname User --email admin@example.com --password ${SUPERSET_ADMIN_PASSWORD:-admin} &&
-      superset init
-      "
-    depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ${AIRFLOW_PROJ_DIR:-.}/superset:/app/superset_home
-
 volumes:
   postgres-db-volume:
   minio-storage:
-  superset-home:

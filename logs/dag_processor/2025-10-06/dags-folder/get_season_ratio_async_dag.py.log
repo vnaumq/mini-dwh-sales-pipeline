@@ -1,0 +1,1 @@
+{"timestamp":"2025-10-06T21:46:55.826918","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_season_ratio_async_dag.py","logger":"airflow.models.dagbag.DagBag"}

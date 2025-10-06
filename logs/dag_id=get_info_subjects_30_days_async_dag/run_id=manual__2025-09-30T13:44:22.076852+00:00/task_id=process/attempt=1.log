@@ -1,6 +1,0 @@
-{"timestamp":"2025-09-30T13:44:22.249181","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
-{"timestamp":"2025-09-30T13:44:22.249822","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_subjects_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
-{"timestamp":"2025-09-30T13:44:30.640997Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
-{"timestamp":"2025-09-30T13:49:45.773996Z","level":"info","event":"FINISH","chan":"stdout","logger":"task"}
-{"timestamp":"2025-09-30T13:49:45.841756Z","level":"info","event":"File successfully uploaded to MinIO: airflow-bucket/data/2025-09-30/info_subject_30_days.csv","chan":"stdout","logger":"task"}
-{"timestamp":"2025-09-30T13:49:45.847922","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator"}
