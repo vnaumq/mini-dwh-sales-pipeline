@@ -12,3 +12,4 @@ selenium
 webdriver_manager
 aiohttp
 asyncio
+redis
