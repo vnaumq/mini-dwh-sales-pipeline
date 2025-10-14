@@ -51,7 +51,7 @@ async def main():
     df = pd.read_csv(obj['Body'])
     df = df[['l3_id']].drop_duplicates()
     df = df[['l3_id']].astype(str)
-    df = df.head(1000)
+    df = df.head(200)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 

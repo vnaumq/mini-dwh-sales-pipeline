@@ -64,13 +64,13 @@ def info_subjects():
     df[['subject_id', 'name', 'position']] = df[['subjectId', 'name', 'position']]
     engine = config.get_engine_postgresql('superset')
 
-    df.to_sql(TABLE_NAME, engine, schema=SCHEMA_NAME, if_exists="replace", index=False)
+    df.to_sql(TABLE_NAME, engine, schema=SCHEMA_NAME, if_exists="append", index=False)
     print(f"✅ Загружено {len(df)} строк в таблицу {TABLE_NAME}")
     print("SUCCESS")
 
 def info_subject_30_days():
 
-    dt = '2025-09-30'
+    dt = '2025-10-14'
 
     BUCKET_NAME  = "airflow-bucket"
     KEY = f"data/{dt}/info_subject_30_days.csv"
@@ -83,7 +83,7 @@ def info_subject_30_days():
     df = pd.read_csv(obj['Body'])
     df['dt'] = pd.to_datetime(df['date'])
     df.drop(['date'], axis=1, inplace=True)
-    df = df[['subject_id', 'name', 'orders', 'ordersSum']]
+    df = df[['subject_id', 'name', 'orders', 'ordersSum', 'dt']]
     engine = config.get_engine_postgresql('superset')
 
     df.to_sql(TABLE_NAME, engine, schema=SCHEMA_NAME, if_exists="replace", index=False)
@@ -173,7 +173,7 @@ def l3_mini():
     print("SUCCESS")
 
 def info_30_days():
-    dt = '2025-09-30'
+    dt = '2025-10-14'
 
     BUCKET_NAME  = "airflow-bucket"
     KEY = f"data/{dt}/info_30_days.csv"
@@ -223,13 +223,6 @@ args = {
 def my_dag():
     @task
     def process():
-        season_ratio()
-        info_subjects()
         info_subject_30_days()
-        l1_l2()
-        l3()
-        l3_mini()
-        info_30_days()
-
     process()
 my_dag()

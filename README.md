@@ -1,110 +1,104 @@
-### Mini DWH Sales Pipeline
+## Mini DWH Sales Pipeline
 
-Кластер для локальной разработки: Apache Airflow (+API Server), PostgreSQL, MinIO, Apache Superset, pgAdmin и Selenium. Проект предназначен для загрузки и обработки данных (ETL/DAGи в `dags/`), хранения артефактов в MinIO и визуализации в Superset.
+Local analytics stack for ETL and visualization: Apache Airflow (API Server, Scheduler, Dag Processor), PostgreSQL, MinIO, Apache Superset, pgAdmin, and Selenium. Suitable for developing and debugging data ingestion/processing pipelines from `dags/`, storing artifacts in MinIO, and building dashboards in Superset.
 
 ---
 
-### Быстрый старт
+### Requirements
+- Docker Desktop (or Docker Engine) and Docker Compose v2
+- `.env` file based on `.env.example`
 
-1) Установите зависимости: Docker Desktop и Docker Compose v2
+---
 
-2) Скопируйте переменные окружения:
+### Quick start
+1) Prepare environment variables:
 ```bash
 cp .env.example .env
 ```
-Отредактируйте значения при необходимости.
-
-3) Запустите кластер:
+2) Start the stack:
 ```bash
 docker compose up -d --build
 ```
-
-4) Откройте сервисы:
-- Airflow API Server: `http://localhost:8080` (для healthcheck), UI через стандартный Webserver не поднимается; используйте Scheduler и API
-- Airflow Scheduler health: `http://localhost:8974/health`
-- Superset: `http://localhost:8088`
-- MinIO (S3 API): `http://localhost:9000`, Консоль: `http://localhost:9001`
-- pgAdmin: `http://localhost:5050`
-- Selenium Grid: `http://localhost:4444`
-
-Остановить кластер и удалить ресурсы:
+3) Check statuses and logs:
+```bash
+docker compose ps
+docker compose logs -f airflow-scheduler
+```
+4) Stop and clean resources when needed:
 ```bash
 docker compose down -v
 ```
 
 ---
 
-### Дефолтные доступы (из .env.example)
+### Services and endpoints
+- Airflow API Server: `http://localhost:8080`
+- Airflow Scheduler health: `http://localhost:8974/health`
+- Superset: `http://localhost:8088`
+- MinIO API/Console: `http://localhost:9000` / `http://localhost:9001`
+- pgAdmin: `http://localhost:5050`
+- Selenium Grid: `http://localhost:4444`
 
+Default credentials come from `.env`:
 - Airflow admin: `AIRFLOW_WWW_USER_USERNAME` / `AIRFLOW_WWW_USER_PASSWORD`
 - Superset admin: `SUPERSET_ADMIN_USERNAME` / `SUPERSET_ADMIN_PASSWORD`
 - MinIO: `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`
 - pgAdmin: `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`
 
-Примечание: Docker Compose автоматически загружает `.env` из корня проекта. Отдельно указывать `env_file` в `docker-compose.yaml` не требуется.
+Note: Docker Compose automatically picks up `.env` from the project root.
 
 ---
 
-### Структура
-
-- `dags/` — DAGи, вспомогательные модули, тестовые файлы
-- `config/airflow.cfg` — кастомная конфигурация Airflow (монтируется в контейнер)
-- `superset/` — домашний каталог Superset (монтируется)
-- `logs/` — логи Airflow
-- `docker-compose.yaml` — описание всех сервисов
-- `requirements.txt` — Python-зависимости для кастомного образа Airflow
-- `Dockerfile` — расширение официального образа Airflow и установка зависимостей
-
----
-
-### Переменные окружения
-
-См. `.env.example` и при необходимости скопируйте в `.env`. Ключевые параметры:
-
+### Environment variables (essentials)
 - PostgreSQL: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
 - Airflow: `AIRFLOW_UID`, `AIRFLOW_WWW_USER_USERNAME`, `AIRFLOW_WWW_USER_PASSWORD`, `_PIP_ADDITIONAL_REQUIREMENTS`
 - MinIO: `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`
 - Superset: `SUPERSET_SECRET_KEY`, `SUPERSET_ADMIN_USERNAME`, `SUPERSET_ADMIN_PASSWORD`
 - pgAdmin: `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD`
-- ETL-секреты: `SITE_EMAIL`, `SITE_PASSWORD` (если используются вашими DAGами)
+- ETL secrets (if used by DAGs): `SITE_EMAIL`, `SITE_PASSWORD`
 
 ---
 
-### Типовой рабочий цикл
-
-1) Размещайте/обновляйте DAGи в `dags/`
-2) Пересоберите и перезапустите Airflow при изменении зависимостей в `requirements.txt`:
+### Working with DAGs
+1) Add/update your code in `dags/`.
+2) If you changed `requirements.txt`, rebuild related services:
 ```bash
 docker compose build --no-cache airflow-scheduler airflow-dag-processor airflow-apiserver airflow-init
 docker compose up -d
 ```
-3) Просматривайте логи в `logs/` или через UI сервисов
+3) Inspect task logs in `logs/` or via service UIs.
 
 ---
 
-### Полезные команды
-
-Зайти в контейнер Airflow CLI:
+### Useful commands
+Open a shell with Airflow CLI:
 ```bash
 docker compose run --rm airflow-cli bash
 ```
-
-Проверить доступность БД и MinIO:
+Follow Postgres and MinIO logs:
 ```bash
-docker compose ps
 docker compose logs -f postgres minio
 ```
-
-Инициализация Superset выполняется автоматически сервисом `superset-init`.
+Superset is initialized automatically by the `superset-init` service.
 
 ---
 
-### Схема проекта
+### Project structure
+- `dags/` — DAGs and helper modules
+- `config/airflow.cfg` — custom Airflow configuration (mounted)
+- `superset/` — Superset config/data (mounted)
+- `logs/` — Airflow logs
+- `docker-compose.yaml` — all services definition
+- `requirements.txt` — Python dependencies for the Airflow image
+- `Dockerfile` — extension of the official Airflow image
 
+---
+
+### Architecture (diagram)
 ```
 graph LR
   subgraph Developer
-    DEV[Локальная машина]
+    DEV[Local machine]
   end
 
   DEV -->|docker compose| DC[(Docker Compose)]
@@ -136,31 +130,36 @@ graph LR
   DC --> PGADMIN
   DC --> SEL
 
-  AS -->|запуск DAG| ADP
+  AS -->|run DAG| ADP
   APS -->|Execution API| AS
 
-  AS -->|подключение| PG
-  ADP -->|метаданные Airflow| PG
+  AS -->|connects to| PG
+  ADP -->|Airflow metadata| PG
 
-  AS -->|чтение/запись артефактов| MINIO
+  AS -->|read/write artifacts| MINIO
 
-  SS -->|OLAP/метаданные Superset| PG
-  SS -->|доступ к артефактам (опц.)| MINIO
+  SS -->|OLAP/metadata| PG
+  SS -->|artifacts access (opt.)| MINIO
 
-  PGADMIN -->|админка| PG
+  PGADMIN -->|admin UI| PG
 
-  AS -->|веб-скрапинг/автотесты| SEL
+  AS -->|web scraping / autotests| SEL
 ```
 
 ---
 
-### Примечания по безопасности
-
-- Значения по умолчанию удобны для локальной разработки, но небезопасны для продакшена
-- Секреты и пароли храните только в `.env` (не коммитьте в Git), используйте менеджеры секретов в реальной среде
+### Troubleshooting
+- Not enough Docker resources: increase memory to ≥4GB and CPU ≥2 (see tips printed by `airflow-init`).
+- Env vars not applied: ensure `.env` is in project root and values are unquoted.
+- Slow build: check Docker cache and `requirements.txt` package list.
 
 ---
 
-### Лицензия
+### Security
+- Defaults are for development only.
+- Keep secrets in `.env`; do not commit them to Git.
 
-См. лицензии соответствующих открытых проектов (Airflow, Superset, MinIO и др.)
+---
+
+### License
+Licenses of respective open-source projects (Airflow, Superset, MinIO, etc.) apply.

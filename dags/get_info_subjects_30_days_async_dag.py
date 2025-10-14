@@ -15,7 +15,6 @@ async def process(yesterday_str, subject_id, today_str, session, cookies_dict):
     data = await endpoints.get_async_info_subjects_30_days(yesterday_str, subject_id, today_str, session, cookies_dict)
     if not data:
         return pd.DataFrame()
-
     df_temp = pd.json_normalize(data)
     if df_temp.empty:
         return pd.DataFrame()
@@ -52,12 +51,19 @@ async def main():
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
     df[['subject_id']] = df[['subjectId']]
+    df.sort_values('orders', inplace=True)
     df = df[['subject_id']].drop_duplicates()
-    df = df.head(1000)
+    df = df.head(5)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
 
     async with aiohttp.ClientSession() as session:
+
+        tasks = [
+            endpoints.cache_subjects(subject_id, session, cookies_dict)
+            for subject_id in df['subject_id']
+        ]
+
         tasks = [
             process(yesterday_str, subject_id, today_str, session, cookies_dict)
             for subject_id in df['subject_id']
@@ -73,6 +79,7 @@ async def main():
         df_info = pd.DataFrame()
 
     csv_buffer = BytesIO()
+    print(df_info.shape)
     df_info.to_csv(csv_buffer, index=False)
     csv_buffer.seek(0)
 

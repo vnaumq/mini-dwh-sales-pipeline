@@ -11,7 +11,7 @@ import aiohttp
 import asyncio
 
 
-semaphore = asyncio.Semaphore(10)
+semaphore = asyncio.Semaphore(1)
 
 def get_cookies_local(email: str, password: str) -> dict:
     """getting cookies"""
@@ -185,6 +185,7 @@ async def get_info_30_async_days(check_dt: str, l3_id: int, today: str, session:
         for attempt in range(5):  # до 5 попыток при 429
             async with session.get(url, cookies=cookies, headers=headers) as response:
                 if response.status == 200:
+                    print('200')
                     data = await response.json()
                     return data.get("totals", [])
                 elif response.status == 429:
@@ -282,18 +283,14 @@ async def get_async_info_subjects_30_days(check_dt: str, subject_id: int, today:
 
     async with semaphore:  # Ограничиваем параллельность
 
-        async with session.post(
-            f'https://eggheads.solutions/analytics/wbSubject/buildCache/{subject_id}',
-            cookies=cookies,
-            headers=headers
-        ) as resp:
-            await resp.text()
-
-        for attempt in range(5):  # До 5 попыток при 429
+        for attempt in range(7):  # До 7 попыток при 429
             async with session.get(url, cookies=cookies, headers=headers) as response:
                 if response.status == 200:
+                    print(200)
                     data = await response.json()
+                    print(data)
                     return data.get("totals", [])
+
                 elif response.status == 429:
                     wait_time = 2 ** attempt  # Экспоненциальный backoff
                     await asyncio.sleep(wait_time)
@@ -302,5 +299,24 @@ async def get_async_info_subjects_30_days(check_dt: str, subject_id: int, today:
                     text = await response.text()
                     print(f"Error {response.status}: {text}")
                     print(f"URL: {url}")
+
                     return []
+
         return []
+
+def cache_subjects(subject_id: int, session, cookies: dict):
+
+    headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "User-Agent": "Mozilla/5.0 (compatible; DataCollector/1.0)"
+    }
+
+    response = session.post(
+        f'https://eggheads.solutions/analytics/wbSubject/buildCache/{subject_id}',
+
+        cookies=cookies,
+        headers=headers
+    )
+
+    return response

@@ -1,0 +1,22 @@
+{"timestamp":"2025-10-14T08:36:19.483372","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-10-14T08:36:19.484594","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_subjects_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-10-14T08:36:29.017777Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.008101Z","level":"info","event":"200","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.010439Z","level":"info","event":"<coroutine object ClientResponse.text at 0xffff8b5f02e0>","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.010019","level":"warning","event":"coroutine 'ClientResponse.text' was never awaited","category":"RuntimeWarning","filename":"/opt/airflow/dags/endpoints.py","lineno":297,"logger":"py.warnings"}
+{"timestamp":"2025-10-14T08:36:30.054140Z","level":"info","event":"200","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.054345Z","level":"info","event":"<coroutine object ClientResponse.text at 0xffff8b5f0580>","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.054140","level":"warning","event":"coroutine 'ClientResponse.text' was never awaited","category":"RuntimeWarning","filename":"/opt/airflow/dags/endpoints.py","lineno":297,"logger":"py.warnings"}
+{"timestamp":"2025-10-14T08:36:30.059564Z","level":"info","event":"200","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.059706Z","level":"info","event":"<coroutine object ClientResponse.text at 0xffff8b5f0c80>","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.059570","level":"warning","event":"coroutine 'ClientResponse.text' was never awaited","category":"RuntimeWarning","filename":"/opt/airflow/dags/endpoints.py","lineno":297,"logger":"py.warnings"}
+{"timestamp":"2025-10-14T08:36:30.161207Z","level":"info","event":"200","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.161721Z","level":"info","event":"<coroutine object ClientResponse.text at 0xffff8b5f1000>","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.161125","level":"warning","event":"coroutine 'ClientResponse.text' was never awaited","category":"RuntimeWarning","filename":"/opt/airflow/dags/endpoints.py","lineno":297,"logger":"py.warnings"}
+{"timestamp":"2025-10-14T08:36:30.477624Z","level":"info","event":"200","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.480813Z","level":"info","event":"<coroutine object ClientResponse.text at 0xffff8b95ba00>","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.609983Z","level":"info","event":"FINISH","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.610221Z","level":"info","event":"(30, 5)","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.610400Z","level":"info","event":"File successfully uploaded to MinIO: airflow-bucket/data/2025-10-14/info_subject_30_days.csv","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-14T08:36:30.477288","level":"warning","event":"coroutine 'ClientResponse.text' was never awaited","category":"RuntimeWarning","filename":"/opt/airflow/dags/endpoints.py","lineno":297,"logger":"py.warnings"}
+{"timestamp":"2025-10-14T08:36:30.611341","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator"}

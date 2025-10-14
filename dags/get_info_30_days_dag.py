@@ -30,8 +30,8 @@ def main():
 
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
-
     df = df[['l3_id']].drop_duplicates()
+    df = df[['l3_id']].astype(str)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)
     session = endpoints.get_session()
