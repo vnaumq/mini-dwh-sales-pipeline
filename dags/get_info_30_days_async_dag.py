@@ -50,6 +50,7 @@ async def main():
     obj = s3.get_object(Bucket=BUCKET_NAME, Key=KEY_READ)
     df = pd.read_csv(obj['Body'])
     df = df[['l3_id']].drop_duplicates()
+    df = df[['l3_id']].astype(str)
     df = df.head(1000)
 
     cookies_dict = endpoints.get_cookies(SITE_EMAIL, SITE_PASSWORD)

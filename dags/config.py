@@ -26,10 +26,10 @@ def get_s3_client():
 
     return s3
 
-def get_engine_postgresql():
+def get_engine_postgresql(db):
 
     engine = create_engine(
-        f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+        f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{db}"
     )
 
     return engine

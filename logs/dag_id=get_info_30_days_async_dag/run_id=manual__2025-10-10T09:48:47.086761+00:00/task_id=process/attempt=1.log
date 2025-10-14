@@ -1,0 +1,3 @@
+{"timestamp":"2025-10-10T09:48:48.265179","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-10-10T09:48:48.265874","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/get_info_30_days_async_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-10-10T09:49:05.563346Z","level":"info","event":"cookie done","chan":"stdout","logger":"task"}

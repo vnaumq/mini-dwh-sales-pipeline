@@ -1,0 +1,17 @@
+{"timestamp":"2025-10-10T08:47:01.778487","level":"info","event":"DAG bundles loaded: dags-folder","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager"}
+{"timestamp":"2025-10-10T08:47:01.779353","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/loading_data_to_postgres_dag.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2025-10-10T08:47:09.208550Z","level":"info","event":"✅ Загружено 452731 строк в таблицу season_ratio","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.212779Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.719863Z","level":"info","event":"✅ Загружено 7000 строк в таблицу info_subjects","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.720062Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.863683Z","level":"info","event":"✅ Загружено 12690 строк в таблицу info_subjects_days","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.863886Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.887864Z","level":"info","event":"✅ Загружено 543 строк в таблицу category_l1_l2","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:09.888026Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.310160Z","level":"info","event":"✅ Загружено 75618 строк в таблицу category_l3","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.312763Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.388086Z","level":"info","event":"✅ Загружено 4439 строк в таблицу category_l3_mini","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.388869Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.909890Z","level":"info","event":"✅ Загружено 29970 строк в таблицу category_info_days","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.910176Z","level":"info","event":"SUCCESS","chan":"stdout","logger":"task"}
+{"timestamp":"2025-10-10T08:47:11.910598","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.decorators.python._PythonDecoratedOperator"}
