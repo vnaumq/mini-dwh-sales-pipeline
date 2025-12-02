@@ -34,7 +34,7 @@ async def main():
 
     BUCKET_NAME = "airflow-bucket"
     KEY_READ = f"data/info_subjects.csv"
-    KEY_LOAD = f"data/season_ratio.csv"
+    KEY_LOAD = f"data/season_ratio_{today_str}.csv"
 
     s3 = boto3.client(
         "s3",
